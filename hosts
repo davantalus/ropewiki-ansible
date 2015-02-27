@@ -1,0 +1,5 @@
+[web]
+162.243.139.190     ansible_connection=ssh
+
+[database]
+104.236.131.155    ansible_connection=ssh

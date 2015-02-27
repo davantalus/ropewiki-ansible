@@ -1,0 +1,16 @@
+---
+- name: install common stuff
+  hosts: all
+  roles:
+    - common
+
+
+- name: configure and deploy the webservers and application code
+  hosts: web
+  roles:
+    - web
+
+- name: deploy MySQL and configure the databases
+  hosts: database
+  roles:
+    - database

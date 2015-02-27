@@ -1,0 +1,10 @@
+---
+nginx_host: 162.243.139.190
+mysql_host: 104.236.131.155
+
+mysqlservice: mysqld
+mysql_port: 3306
+dbuser: ropewiki
+dbname: ropewiki
+dbpass: supersecret
+upassword: ropewikisupersecret

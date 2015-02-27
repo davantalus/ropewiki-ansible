@@ -1,0 +1,31 @@
+---
+- apt: update_cache=yes
+
+# Install the packages
+- apt: name={{item}} state=present
+  with_items:
+   - python-pip
+   - python-dev
+   - python-mysqldb
+   - mysql-server
+   - libmysqlclient-dev
+ 
+- pip: name=MySQL-python
+
+- name: Create Mysql configuration file
+  lineinfile: dest=/etc/mysql/my.cnf regexp='^bind-address(\s*)=' line='bind-address\1= {{ mysql_host }}'  backrefs=yes
+  notify: 
+  - restart mysql
+
+- name: Start Mysql Service
+  service: name=mysql state=started enabled=true
+
+- name: Create Application Database
+  mysql_db: name={{ dbname }} state=present
+
+- name: Create Application DB User
+  mysql_user: name={{ dbuser }} password={{ upassword }} priv=*.*:ALL host='%' state=present
+
+  # Copy database dump file to remote host and restore it to database 'my_db'
+- copy: src=backups/recent.dump dest=/tmp/db.sql.gz
+- mysql_db: name={{ dbname }} state=import target=/tmp/db.sql.gz

@@ -1,0 +1,28 @@
+---
+nginx_host: 127.0.0.1
+mysql_host: 127.0.0.1
+
+mysqlservice: mysqld
+mysql_port: 3306
+dbuser: myuser
+dbname: mydb
+dbpass: mypass
+upassword: mypass
+
+wgServer: http://localhost
+wgLogo: http://localhost/Ropewiki.png
+semanticServer: localhost
+
+wgDBtype: mysql
+wgDBserver: 127.0.0.1
+wgDBname: mydb
+wgDBuser: myuser
+wgDBpassword: mypass
+wgSecretKey: 172a62sldkfjlsdjkj4509834508345lksdjflksjdflksj34
+wgUpgradeKey: 3987234khdlkjf234
+
+wgReCaptchaPublicKey: 6Ld2OuoSAAAAADfblahblahblahblahblah
+wgReCaptchaPrivateKey: 6Ld2OuoSAAAAAN7ublahblahprivateblah
+wgGoogleAnalyticsAccount: UA-99992222-1
+wgEmergencyContact: root@localhost
+wgPasswordSender: admin@localhost

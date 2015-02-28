@@ -1,0 +1,71 @@
+---
+#- apt: update_cache=yes
+
+- name: Install app package {{item}}
+  apt: name={{item}} state=present
+  with_items:
+   - nginx
+   - php5
+   - php5-common
+   - php5-cli
+   - php5-fpm
+   - php5-mysql
+   - php-apc
+   - imagemagick
+   - libpcre3-dev
+   - python3-requests
+   - liblua5.1-0
+#   - agp
+
+- name: Create nginx configuration file
+  template: src=default dest=/etc/nginx/sites-available/ropewiki.com
+
+- name: Create nginx configuration file
+  template: src=default dest=/etc/nginx/sites-enabled/ropewiki.com
+  notify: 
+  - restart nginx
+
+- name: Download mediawiki
+  get_url: url=http://releases.wikimedia.org/mediawiki/1.24/mediawiki-1.24.1.tar.gz dest=/tmp/ mode=0660 force=no 
+
+- name: Unarchive a file that is already on the remote machine
+  unarchive: src=/tmp/mediawiki-1.24.1.tar.gz dest=/usr/share/nginx/html/ copy=no creates=/usr/share/nginx/html/ropewiki
+
+- name: Move mediawiki-1.24.1 to ropewiki
+  command: mv /usr/share/nginx/html/mediawiki-1.24.1 /usr/share/nginx/html/ropewiki creates=/usr/share/nginx/html/ropewiki
+
+- name: Create LocalSettings configuration file
+  template: src=LocalSettings.php.j2 dest=/usr/share/nginx/html/ropewiki/LocalSettings.php
+  notify: 
+  - restart nginx
+
+- name: Create SiteSpecificSettings configuration file
+  template: src=SiteSpecificSettings.php.j2 dest=/usr/share/nginx/html/ropewiki/SiteSpecificSettings.php
+  notify: 
+  - restart nginx
+
+- name: Copy logo
+  copy: src=logo.png dest=/usr/share/nginx/html/ropewiki/Ropewiki.png owner=www-data group=www-data mode=0644
+
+- name: Copy favicon
+  copy: src=favicon.ico dest=/usr/share/nginx/html/ropewiki/favicon.ico owner=www-data group=www-data mode=0644
+
+- name: Copy captcha images
+  copy: src=captcha.jpg dest=/usr/share/nginx/html/ropewiki/ owner=www-data group=www-data mode=0644
+
+- name: Install Composer
+  action: shell curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ creates=/usr/local/bin/composer.phar
+
+- name: Update Composer
+  action: shell /usr/local/bin/composer.phar self-update
+  register: composer_update_output
+  changed_when: composer_update_output.stdout.find('You are already using composer version') == -1
+
+- name: Install {{ item }}
+  shell: php /usr/local/bin/composer.phar require {{ item }} chdir=/usr/share/nginx/html/ropewiki
+  with_items:
+     - "mediawiki/semantic-media-wiki ~2.1"
+     - "mediawiki/header-footer ~2.1"
+     - "mediawiki/semantic-maps"
+     - "mediawiki/semantic-result-formats"
+     - "mediawiki/semantic-forms"

@@ -1,0 +1,60 @@
+#Install custom and poorly repo'd extensions.
+- copy: src=extensions/{{item}} dest=/usr/share/nginx/html/ropewiki/extensions/{{item}} mode=0644
+  with_items:
+     - IconSummary/
+     - KmlView/
+     - Preloader/
+     - SemanticDependency/
+     - SimpleLink/
+     - TreeToQuery/
+     - xml2wiki-dr/
+
+# Checkout subversion repository to specified folder.
+- name: Check out {{ item }}
+  git: repo=https://git.wikimedia.org/git/mediawiki/extensions/{{ item }}.git
+       dest=/usr/share/nginx/html/ropewiki/extensions/{{item}}
+  with_items:
+     - APC
+     - Arrays
+     - CategoryTree
+     - CheckUser
+     - ContributionScores
+     - googleAnalytics
+     - HeaderTabs
+     - MagicNoCache
+     - MyVariables
+     - PdfHandler
+     - Scribunto
+     - SemanticCompoundQueries
+     - SemanticDrilldown
+     - SemanticFormsInputs
+     - SemanticRating
+     - SimpleAntiSpam
+     - UrlGetParameters
+     - UserMerge
+     - Variables
+     - Vector
+
+# Checkout from these unique assholes
+#- name: Check out Maps
+#  git: repo=https://git.wikimedia.org/git/mediawiki/extensions/Maps.git dest=/usr/share/nginx/html/ropewiki/extensions/Maps
+
+- name: Check out embedvideo
+  git: repo=https://github.com/Alexia/mediawiki-embedvideo.git dest=/usr/share/nginx/html/ropewiki/extensions/EmbedVideo
+
+- name: Check out UserAdmin
+  git: repo=https://github.com/apmuthu/MediaWiki-Extension--UserAdmin.git dest=/usr/share/nginx/html/ropewiki/extensions/UserAdmin
+
+#  sudo: yes
+#  sudo_user: nginx
+#  notify:
+#    - Rebuild localisation cache
+#    - Update mediawiki
+#    - Mediawiki submodule fileMode false
+
+
+- name: Update maintenance/update.php
+  shell: php maintenance/update.php chdir=/usr/share/nginx/html/ropewiki
+
+- name: nginx service state
+  service: name=nginx state=started enabled=yes

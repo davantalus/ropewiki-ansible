@@ -20,12 +20,19 @@
 - name: Start Mysql Service
   service: name=mysql state=started enabled=true
 
-- name: Create Application Database
-  mysql_db: name={{ dbname }} state=present
+#- name: Create Application Database
+#  mysql_db: name={{ dbname }} state=present
+#
+#- name: Create Application DB User
+#  mysql_user: name={{ dbuser }} password={{ upassword }} priv=*.*:ALL host='%' state=present
+#
+#  # Copy database dump file to remote host and restore it to database 'my_db'
+#- copy: src=backups/recent.dump dest=/tmp/db.sql.gz
+#- mysql_db: name={{ dbname }} state=import target=/tmp/db.sql.gz
+#
+# Creates an entry like "0 5,2 * * ls -alh > /dev/null"
+- cron: name="backupdb" minute="0" hour="5,18" job="/bin/sh /root/backup_mysql.sh > /dev/null 2>&1"
+- cron: name="backupimages" minute="0" hour="4,17" job="/bin/tar -zcvf /root/ropewiki_html.tar.gz /var/www/ropewiki.com 2>&1"
 
-- name: Create Application DB User
-  mysql_user: name={{ dbuser }} password={{ upassword }} priv=*.*:ALL host='%' state=present
-
-  # Copy database dump file to remote host and restore it to database 'my_db'
-- copy: src=backups/recent.dump dest=/tmp/db.sql.gz
-- mysql_db: name={{ dbname }} state=import target=/tmp/db.sql.gz
+#0 17 * * * /bin/sh /root/backup_mysql.sh > /dev/null 2>&1
+#50 17 * * * /bin/tar -zcvf /root/ropewiki_html.tar.gz /var/www/ropewiki.com 2>&1

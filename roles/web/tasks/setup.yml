@@ -47,6 +47,9 @@
 - name: Copy logo
   copy: src=logo.png dest=/usr/share/nginx/html/ropewiki/Ropewiki.png owner=www-data group=www-data mode=0644
 
+- name: Copy common skin
+  copy: src=skins/common dest=/usr/share/nginx/html/ropewiki/skins/ owner=www-data group=www-data mode=0644
+
 - name: Copy favicon
   copy: src=favicon.ico dest=/usr/share/nginx/html/ropewiki/favicon.ico owner=www-data group=www-data mode=0644
 
